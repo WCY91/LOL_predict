@@ -112,10 +112,10 @@ import torch.optim as optim
 data = pd.read_csv('/content/league_of_legends_data_large.csv') # read file
 data = data.dropna()
 X = data.drop('win', axis=1)
+feature_columns = X.columns
 y = data['win']
 X = StandardScaler().fit_transform(X)
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
-
 X_train = torch.tensor(X_train,dtype=torch.float32)
 X_test = torch.tensor(X_test,dtype=torch.float32)
 y_train = torch.tensor(y_train.values, dtype=torch.float32)
@@ -248,8 +248,8 @@ for lr in candidated_lr_list:
 print(f"the best lr is {best_lr}")
 
 # step 8  Feature Importance
-weights = model.linear.weight.data.numpy() # 8 features
-weights_df = pd.DataFrame({'feature_name':X_train.columns , 'weight_value':weights})
+weights = model.linear.weight.data.numpy().flatten() # 8 features
+weights_df = pd.DataFrame({'feature_name':feature_columns , 'weight_value':weights})
 weights_df = weights_df.sort_values(by=['weight_value'], ascending=False)
 plt.figure(figsize=(10, 6))
 plt.barh(weights_df['feature_name'], weights_df['weight_value'], color='skyblue')
